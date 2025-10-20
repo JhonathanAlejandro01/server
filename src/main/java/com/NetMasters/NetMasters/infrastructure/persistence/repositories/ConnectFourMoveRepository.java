@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConnectFourMoveRepository extends JpaRepository<ConnectFourMoveModel, Long> {
+	long countByConnect4GameId(Long connect4GameId);
 }

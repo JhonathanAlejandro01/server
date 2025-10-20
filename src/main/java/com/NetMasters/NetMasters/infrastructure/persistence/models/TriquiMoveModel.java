@@ -36,4 +36,7 @@ public class TriquiMoveModel {
 
     @Column(name = "move_time", insertable = false, updatable = false)
     private Timestamp moveTime;
+
+    @Column(name = "encrypted_payload", columnDefinition = "TEXT")
+    private String encryptedPayload;
 }

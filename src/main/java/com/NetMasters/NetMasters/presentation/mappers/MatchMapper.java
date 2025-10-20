@@ -13,10 +13,12 @@ public interface MatchMapper {
     @Mapping(source = "game.id", target = "gameId")
     @Mapping(source = "player1.id", target = "player1Id")
     @Mapping(source = "player2.id", target = "player2Id")
+    @Mapping(source = "board", target = "board")
     Match matchModelToMatch(MatchModel matchModel);
 
     @Mapping(source = "gameId", target = "game.id")
     @Mapping(source = "player1Id", target = "player1.id")
     @Mapping(source = "player2Id", target = "player2.id")
+    @Mapping(source = "board", target = "board")
     MatchModel matchToMatchModel(Match match);
 }

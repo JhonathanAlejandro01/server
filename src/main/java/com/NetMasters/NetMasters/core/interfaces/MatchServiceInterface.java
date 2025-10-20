@@ -62,4 +62,12 @@ public interface MatchServiceInterface {
      * @return true si se eliminó correctamente.
      */
     boolean deleteMatch(Long matchId);
+
+    /**
+     * Asigna el segundo jugador (player2) a una partida existente y devuelve la partida actualizada.
+     * @param matchId ID de la partida.
+     * @param player2Id ID del jugador que se une.
+     * @return Optional con la entidad Match actualizada o empty si no existe.
+     */
+    Optional<com.NetMasters.NetMasters.core.entities.Match> assignPlayerToMatch(Long matchId, Long player2Id);
 }

@@ -39,4 +39,7 @@ public class MatchModel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MatchStatus status;
+
+    @Column(name = "board", columnDefinition = "TEXT")
+    private String board;
 }

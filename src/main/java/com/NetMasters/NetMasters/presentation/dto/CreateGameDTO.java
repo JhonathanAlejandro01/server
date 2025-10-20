@@ -15,6 +15,6 @@ public class CreateGameDTO {
     @NotEmpty(message = "Genre cannot be empty")
     private String genre;
     @NotEmpty
-    @Size(min = 2, max = 2, message = "A triqui game must have exactly 2 players") //mejor añadir un join en ven de pasar los id de esta manera (solo es provicional)
+    @Size(min = 1, max = 2, message = "A triqui game must have exactly 2 players") //mejor añadir un join en ven de pasar los id de esta manera (solo es provicional)
     private List<Long> playerIds;
 }

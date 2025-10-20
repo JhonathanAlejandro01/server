@@ -15,6 +15,7 @@ import com.NetMasters.NetMasters.infrastructure.persistence.models.TriquiMoveMod
 import com.NetMasters.NetMasters.infrastructure.persistence.repositories.PlayerRepository;
 import com.NetMasters.NetMasters.infrastructure.persistence.repositories.TriquiGameRepository;
 import com.NetMasters.NetMasters.infrastructure.persistence.repositories.TriquiMoveRepository;
+import com.NetMasters.NetMasters.infrastructure.persistence.repositories.MatchRepository;
 import com.NetMasters.NetMasters.presentation.dto.MoveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,15 +29,20 @@ public class TriquiService implements TriquiGameServiceInterface {
     private final TriquiGameRepository triquiGameRepository;
     private final TriquiMoveRepository triquiMoveRepository;
     private final PlayerRepository playerRepository;
+    private final MatchRepository matchRepository;
     private final EventBus eventBus;
+    private final com.NetMasters.NetMasters.infrastructure.persistence.config.AesEncryptionService encryptionService;
 
     @Autowired
     public TriquiService(TriquiGameRepository triquiGameRepository, TriquiMoveRepository triquiMoveRepository,
-                          PlayerRepository playerRepository, EventBus eventBus) {
+                          PlayerRepository playerRepository, MatchRepository matchRepository, EventBus eventBus,
+                          com.NetMasters.NetMasters.infrastructure.persistence.config.AesEncryptionService encryptionService) {
         this.triquiGameRepository = triquiGameRepository;
         this.triquiMoveRepository = triquiMoveRepository;
         this.playerRepository = playerRepository;
+        this.matchRepository = matchRepository;
         this.eventBus = eventBus;
+        this.encryptionService = encryptionService;
     }
 
     @Transactional(readOnly = true)
@@ -138,6 +144,20 @@ public class TriquiService implements TriquiGameServiceInterface {
         // moveNumber can be derived from the number of existing moves for this game
         long moveNumber = triquiMoveRepository.countByTriquiGameId(game.getId()) + 1;
         move.setMoveNumber((int) moveNumber);
+        // Build payload and encrypt
+        try {
+            var payload = new java.util.HashMap<String, Object>();
+            payload.put("moveNumber", move.getMoveNumber());
+            payload.put("playerId", playerId);
+            payload.put("position", position);
+            payload.put("symbol", String.valueOf(symbol));
+            payload.put("matchId", game.getMatch().getId());
+            String json = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(payload);
+            String encrypted = encryptionService.encrypt(json);
+            move.setEncryptedPayload(encrypted);
+        } catch (Exception e) {
+            // if encryption fails, still save non-encrypted payload in DB via other columns
+        }
         triquiMoveRepository.save(move);
     }
 
@@ -171,8 +191,31 @@ public class TriquiService implements TriquiGameServiceInterface {
     // Implementaciones de TriquiGameServiceInterface
     @Override
     public Long createTriquiGame(Long matchId) {
-        // TODO: Implementar creación de juego Triqui
-        return null;
+        // Obtener el match
+        com.NetMasters.NetMasters.infrastructure.persistence.models.MatchModel matchModel = matchRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalStateException("Match not found: " + matchId));
+
+        // Crear modelo Triqui
+        com.NetMasters.NetMasters.infrastructure.persistence.models.TriquiGameModel model = com.NetMasters.NetMasters.infrastructure.persistence.models.TriquiGameModel
+                .builder()
+                .match(matchModel)
+                .board("---------")
+                .currentTurn(matchModel.getPlayer1())
+                .build();
+
+        model = triquiGameRepository.save(model);
+
+        // Publicar GameStartedEvent
+        try {
+            eventBus.publish(new GameStartedEvent(
+                    this,
+                    new MatchId(matchId),
+                    new PlayerId(matchModel.getPlayer1().getId()),
+                    matchModel.getPlayer2() != null ? new PlayerId(matchModel.getPlayer2().getId()) : null
+            ));
+        } catch (Exception ignored) {}
+
+        return model.getId();
     }
 
     @Override

@@ -1,0 +1,152 @@
+{
+  "info": {
+    "name": "NetMasters - Full Collection",
+    "_postman_id": "netmasters-full-collection",
+    "description": "Collection for testing NetMasters API: register/login two users, create game, create match, play moves and check rankings. Sets variables tokenAlice, tokenBob, gameId, matchId, player1Id, player2Id.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Alice",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth","register"] }
+      }
+    },
+    {
+      "name": "Register Bob",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"bob\",\n  \"email\": \"bob@example.com\",\n  \"password\": \"secret2\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth","register"] }
+      }
+    },
+    {
+      "name": "Login Alice",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if(json && json.token) { pm.environment.set('tokenAlice', json.token); pm.environment.set('player1Id', json.userId || json.id || '1'); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] }
+      }
+    },
+    {
+      "name": "Login Bob",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if(json && json.token) { pm.environment.set('tokenBob', json.token); pm.environment.set('player2Id', json.userId || json.id || '2'); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"bob@example.com\",\n  \"password\": \"secret2\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] }
+      }
+    },
+    {
+      "name": "Create Game (TRIQUI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if(json && json.id) { pm.environment.set('gameId', json.id); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenAlice}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"TRIQUI\",\n  \"genre\": \"board\",\n  \"playerIds\": [{{player1Id}}, {{player2Id}}]\n}" },
+        "url": { "raw": "{{baseUrl}}/api/games", "host": ["{{baseUrl}}"], "path": ["api","games"] }
+      }
+    },
+    {
+      "name": "Create Match",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "if(json && json.id) { pm.environment.set('matchId', json.id); }"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenAlice}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"gameId\": {{gameId}},\n  \"player1Id\": {{player1Id}},\n  \"player2Id\": {{player2Id}}\n}" },
+        "url": { "raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}"], "path": ["api","matches"] }
+      }
+    },
+    {
+      "name": "Get Triqui Board",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{tokenAlice}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/triqui/{{matchId}}/board", "host": ["{{baseUrl}}"], "path": ["api","triqui","{{matchId}}","board"] }
+      }
+    },
+    {
+      "name": "Triqui Make Move",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{tokenAlice}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"playerId\": {{player1Id}},\n  \"position\": 4\n}" },
+        "url": { "raw": "{{baseUrl}}/api/triqui/{{matchId}}/move", "host": ["{{baseUrl}}"], "path": ["api","triqui","{{matchId}}","move"] }
+      }
+    },
+    {
+      "name": "Get Rankings",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/api/rankings", "host": ["{{baseUrl}}"], "path": ["api","rankings"] }
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "tokenAlice", "value": "" },
+    { "key": "tokenBob", "value": "" },
+    { "key": "gameId", "value": "" },
+    { "key": "matchId", "value": "" },
+    { "key": "player1Id", "value": "1" },
+    { "key": "player2Id", "value": "2" }
+  ]
+}

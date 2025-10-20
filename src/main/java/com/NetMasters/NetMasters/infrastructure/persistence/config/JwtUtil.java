@@ -15,7 +15,7 @@ import java.util.function.Function;
 public class JwtUtil implements JwtServiceInterface {
 
     private static final String SECRET_KEY = "mySecretKeyForJwtTokenGenerationThatIsLongEnoughToBeSecure12345678901234567890"; // Cambiar por una clave segura en producción
-    private static final int JWT_EXPIRATION = 86400000; // 24 horas en milisegundos
+    private static final int JWT_EXPIRATION = 1000 * 60 * 60 * 24; // 24 horas en milisegundos
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

@@ -39,4 +39,7 @@ public class ConnectFourMoveModel {
 
     @Column(name = "move_time", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime moveTime;
+
+    @Column(name = "encrypted_payload", columnDefinition = "TEXT")
+    private String encryptedPayload;
 }

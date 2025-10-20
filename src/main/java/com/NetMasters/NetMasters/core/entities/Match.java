@@ -16,6 +16,7 @@ public class Match {
     private Long gameId;
     private Long player1Id;
     private Long player2Id;
+    private String board; // serialized board JSON (e.g. ["X",null,"O",...])
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private MatchStatus status;

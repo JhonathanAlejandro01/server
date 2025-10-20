@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConnectFourGameRepository extends JpaRepository<ConnectFourGameModel, Long> {
+	java.util.Optional<ConnectFourGameModel> findByMatchId(Long matchId);
 }
