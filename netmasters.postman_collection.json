@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "75eef00c-bdd0-4da5-82fa-90dd352c8fb9",
+		"name": "netmasters",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48438977",
+		"_collection_link": "https://edwjoarma-5340809.postman.co/workspace/Edwin-J.-Arias's-Workspace~3d6f2e82-bc81-411a-8f0b-a2e2264e9f52/collection/48438977-75eef00c-bdd0-4da5-82fa-90dd352c8fb9?action=share&source=collection_link&creator=48438977"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"username\": \"Karly\",\r\n\t\"email\": \"Karly@gmail.com\",\r\n\t\"password\": \"Karly\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "play",
+			"item": [
+				{
+					"name": "create game",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"TRIQUI\",\r\n    \"genre\": \"speed\",\r\n    \"playerIds\": [1, 2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"games"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get board triqui",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/triqui/1/board",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"triqui",
+								"1",
+								"board"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make move triqui",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"playerId\": 2,\r\n    \"position\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/triqui/1/move",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"triqui",
+								"1",
+								"move"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
